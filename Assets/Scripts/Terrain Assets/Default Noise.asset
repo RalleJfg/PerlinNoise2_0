@@ -17,12 +17,12 @@ MonoBehaviour:
     normalizeMode: 1
     scale: 50
     octaves: 6
-    persistance: 0.436
+    persistance: 0.6
     lacunarity: 2
     seed: 0
-    offset: {x: 0, y: 0}
+    offset: {x: 72, y: 0}
   useFalloff: 0
-  heightMultiplier: 50
+  heightMultiplier: 21.13
   heightCurve:
     serializedVersion: 2
     m_Curve:
@@ -35,15 +35,6 @@ MonoBehaviour:
       weightedMode: 0
       inWeight: 0
       outWeight: 0
-    - serializedVersion: 3
-      time: 0.21242063
-      value: 0.14819947
-      inSlope: 1.1543225
-      outSlope: 1.1543225
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
       value: 1
