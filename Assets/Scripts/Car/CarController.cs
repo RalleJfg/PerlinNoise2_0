@@ -24,6 +24,11 @@ public class CarController : MonoBehaviour
     private float emissionRate;
 
     public TrailRenderer[] trails;
+
+
+    public LayerMask whatIsGround;
+    public float groundRayLength = 0.5f;
+    public Transform groundRayPoint;
     
 
     void Start()
@@ -55,46 +60,36 @@ public class CarController : MonoBehaviour
 
 
         transform.position = rb.transform.position;
-    }
 
-    private void OnTriggerEnter(Collider other) 
-    {
-        
-        if(other.tag == "Ground")
-        {
-            print("Grounded");
-            groundRotationThingy = other.gameObject;
-            grounded = true;
 
-        }
         
     }
 
-    private void OnTriggerExit(Collider other) 
-    {
-        if(other.tag == "Ground")
-        {
-            print("notGrounded");
-            
-            grounded = false;
-        }
-    }
+  
 
     void FixedUpdate()
     {
-        RaycastHit hit;
-        rb.drag = dragOnGround;
         
-        Vector3 targetEulerAngles = groundRotationThingy.transform.eulerAngles;
-        Vector3 currentEulerAngles = transform.eulerAngles;
+        rb.drag = dragOnGround;
 
-        currentEulerAngles.x = targetEulerAngles.x;
-        transform.eulerAngles = currentEulerAngles;
+        RaycastHit hit;
+
+        if(Physics.Raycast(groundRayPoint.position, -transform.up, out hit, groundRayLength, whatIsGround))
+        {
+            grounded = true;
+
+            transform.rotation = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
+        }
+        else
+        {
+            grounded = false;
+        }
 
         emissionRate = 0;
 
-        if(turnInput == 1 || turnInput == -1 && speedInput == 8000)
+        if(turnInput == 1 || turnInput == -1 && speedInput == 8000 && grounded)
         {
+            print("not");
             for(int i = 0; i < trails.Length; i++)
             {
                 trails[i].emitting = true;
