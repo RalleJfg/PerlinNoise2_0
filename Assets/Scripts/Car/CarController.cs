@@ -78,7 +78,14 @@ public class CarController : MonoBehaviour
         {
             grounded = true;
 
-            transform.rotation = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
+            //transform.rotation = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
+            
+            
+            // Calculate the target rotation based on the surface normal
+            Quaternion targetRotation = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
+
+            // Smoothly interpolate towards the target rotation
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 1.1f);
         }
         else
         {
@@ -87,7 +94,7 @@ public class CarController : MonoBehaviour
 
         emissionRate = 0;
 
-        if(turnInput == 1 || turnInput == -1 && speedInput == 8000 && grounded)
+        if((turnInput == 1 || turnInput == -1) && speedInput == 8000 && grounded)
         {
             print("not");
             for(int i = 0; i < trails.Length; i++)
@@ -117,6 +124,7 @@ public class CarController : MonoBehaviour
         {
             rb.drag = 0.1f;
             rb.AddForce(Vector3.up * -gravityForce * 100f);
+            
         }
 
         foreach (ParticleSystem part in particleSystems)
