@@ -31,6 +31,7 @@ public class CarController : MonoBehaviour
     public Transform groundRayPoint;
 
     private bool acceleration;
+    float maxXRotation = 360f; // Limit to prevent reaching 90 degrees
     
 
     void Start()
@@ -81,22 +82,15 @@ public class CarController : MonoBehaviour
 
     void RotateCarInAir()
     {
-        if(Input.GetAxis("Vertical") > 0 && grounded == false)
-        {
-            
-            // Define the target rotation
-            Quaternion targetRotation = Quaternion.Euler(transform.rotation.eulerAngles.x + 10f, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z);
+        float input = Input.GetAxis("Vertical");
 
-            // Smoothly interpolate to the target rotation
-            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
-        }
-        else if(Input.GetAxis("Vertical") < 0 && grounded == false)
+        if (input != 0 && grounded == false)
         {
-            // Define the target rotation
-            Quaternion targetRotation = Quaternion.Euler(transform.rotation.eulerAngles.x - 10f, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z);
+            // Calculate rotation change in local space
+            float rotationAmount = input * 100f * Time.deltaTime;
 
-            // Smoothly interpolate to the target rotation
-            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+            // Rotate around the X-axis by applying local rotation
+            transform.Rotate(rotationAmount, 0, 0, Space.Self);
         }
 
         if(Input.GetAxis("Horizontal") > 0 && grounded == false)
