@@ -33,8 +33,9 @@ public class CarController : MonoBehaviour
     private bool acceleration;
     public float jumpForce = 1500f; // The force to apply when jumping
     public int maxJumps = 2; // Total number of jumps allowed
-private int currentJumps = 0; // Track how many jumps have been used
-    
+    public int currentJumps = 0; // Track how many jumps have been used
+
+    //public Transform rotation;
 
     void Start()
     {
@@ -44,6 +45,8 @@ private int currentJumps = 0; // Track how many jumps have been used
 
     void Update()
     {
+        //rotation = transform.rotation;
+
         speedInput = 0f;
         if(Input.GetAxis("Vertical") > 0)
         {
@@ -77,11 +80,20 @@ private int currentJumps = 0; // Track how many jumps have been used
 
     void Jump()
     {
-        if (Input.GetMouseButtonDown(1) && currentJumps < maxJumps) // Allow jump if under the max jump count
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-            currentJumps++; // Increment the jump count
-            grounded = false; // Prevent multiple jumps until landing
+            if (grounded) // First jump: straight up
+            {
+                rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+                grounded = false; // Car is no longer grounded
+                currentJumps = 0; // First jump used
+            }
+            else if (!grounded && currentJumps < maxJumps) // Second jump: based on car's orientation
+            {
+                Vector3 jumpDirection = transform.up; // Use the car's current orientation
+                rb.AddForce(jumpDirection * jumpForce, ForceMode.Impulse);
+                currentJumps++; // Second jump used
+            }
         }
     }
 
@@ -158,14 +170,16 @@ private int currentJumps = 0; // Track how many jumps have been used
         {
             grounded = true;
 
-            // Reset jumps when the car lands
-            currentJumps = 0;
+            
             
             // Calculate the target rotation based on the surface normal
             Quaternion targetRotation = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
 
             // Smoothly interpolate towards the target rotation
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+
+            // Reset jumps when the car lands
+            currentJumps = 0;
         }
         else
         {
