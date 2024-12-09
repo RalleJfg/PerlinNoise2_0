@@ -29,11 +29,14 @@ public class CarController : MonoBehaviour
     public LayerMask whatIsGround;
     public float groundRayLength = 0.5f;
     public Transform groundRayPoint;
+
+    private bool acceleration;
     
 
     void Start()
     {
         rb.transform.parent = null;
+        CineShakeScript.Instance.ShakeCamera(0, 0);
     }
 
     void Update()
@@ -62,10 +65,88 @@ public class CarController : MonoBehaviour
         transform.position = rb.transform.position;
 
 
+        Accelerate();
+        
+        RotateCarInAir();
+        
+
+
+
+
+
         
     }
 
-  
+    
+
+    void RotateCarInAir()
+    {
+        if(Input.GetAxis("Vertical") > 0 && grounded == false)
+        {
+            
+            // Define the target rotation
+            Quaternion targetRotation = Quaternion.Euler(transform.rotation.eulerAngles.x + 10f, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z);
+
+            // Smoothly interpolate to the target rotation
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+        }
+        else if(Input.GetAxis("Vertical") < 0 && grounded == false)
+        {
+            // Define the target rotation
+            Quaternion targetRotation = Quaternion.Euler(transform.rotation.eulerAngles.x - 10f, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z);
+
+            // Smoothly interpolate to the target rotation
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+        }
+
+        if(Input.GetAxis("Horizontal") > 0 && grounded == false)
+        {
+            
+            // Define the target rotation
+            Quaternion targetRotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y + 10f, transform.rotation.eulerAngles.z);
+
+            // Smoothly interpolate to the target rotation
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+        }
+        else if(Input.GetAxis("Horizontal") < 0 && grounded == false)
+        {
+            // Define the target rotation
+            Quaternion targetRotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y - 10f, transform.rotation.eulerAngles.z);
+
+            // Smoothly interpolate to the target rotation
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+        }
+    }
+
+    void Accelerate()
+    {
+        
+        if (Input.GetMouseButtonDown(0))
+        {
+            acceleration = true;
+        }
+        if(Input.GetMouseButtonUp(0))
+        {
+            acceleration = false;
+        }
+
+        if(acceleration == true && grounded && Mathf.Abs(speedInput) > 0)
+        {
+            forwardAcc = 16;
+            CineShakeScript.Instance.ShakeCamera(3.5f, 99999);
+        }
+        else if(acceleration == false)
+        {
+            forwardAcc = 8;
+            CineShakeScript.Instance.ShakeCamera(0, 0);
+        }
+        print(Mathf.Abs(speedInput));
+
+        if(Mathf.Abs(speedInput) < 4001)
+        {
+            CineShakeScript.Instance.ShakeCamera(0, 0);
+        }
+    }
 
     void FixedUpdate()
     {
@@ -85,11 +166,12 @@ public class CarController : MonoBehaviour
             Quaternion targetRotation = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
 
             // Smoothly interpolate towards the target rotation
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 1.1f);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
         }
         else
         {
             grounded = false;
+            CineShakeScript.Instance.ShakeCamera(0, 0);
         }
 
         emissionRate = 0;
