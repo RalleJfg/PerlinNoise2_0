@@ -80,7 +80,7 @@ public class CarController : MonoBehaviour
 
     void Jump()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetMouseButtonDown(1))
         {
             if (grounded) // First jump: straight up
             {
