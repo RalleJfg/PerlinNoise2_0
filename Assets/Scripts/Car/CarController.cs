@@ -31,7 +31,9 @@ public class CarController : MonoBehaviour
     public Transform groundRayPoint;
 
     private bool acceleration;
-    float maxXRotation = 360f; // Limit to prevent reaching 90 degrees
+    public float jumpForce = 1500f; // The force to apply when jumping
+    public int maxJumps = 2; // Total number of jumps allowed
+private int currentJumps = 0; // Track how many jumps have been used
     
 
     void Start()
@@ -70,15 +72,18 @@ public class CarController : MonoBehaviour
         
         RotateCarInAir();
         
-
-
-
-
-
-        
+        Jump();
     }
 
-    
+    void Jump()
+    {
+        if (Input.GetMouseButtonDown(1) && currentJumps < maxJumps) // Allow jump if under the max jump count
+        {
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            currentJumps++; // Increment the jump count
+            grounded = false; // Prevent multiple jumps until landing
+        }
+    }
 
     void RotateCarInAir()
     {
@@ -153,8 +158,8 @@ public class CarController : MonoBehaviour
         {
             grounded = true;
 
-            //transform.rotation = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
-            
+            // Reset jumps when the car lands
+            currentJumps = 0;
             
             // Calculate the target rotation based on the surface normal
             Quaternion targetRotation = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
