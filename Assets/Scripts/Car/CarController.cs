@@ -24,6 +24,7 @@ public class CarController : MonoBehaviour
     private float emissionRate;
 
     public TrailRenderer[] trails;
+    public TrailRenderer[] whiteTrails;
 
 
     public LayerMask whatIsGround;
@@ -202,6 +203,22 @@ public class CarController : MonoBehaviour
             for(int i = 0; i < trails.Length; i++)
             {
                 trails[i].emitting = false;
+            }
+        }
+
+        if((speedInput >= 8001))
+        {
+           
+            for(int i = 0; i < whiteTrails.Length; i++)
+            {
+                whiteTrails[i].emitting = true;
+            }
+        }
+        else
+        {
+            for(int i = 0; i < whiteTrails.Length; i++)
+            {
+                whiteTrails[i].emitting = false;
             }
         }
 
