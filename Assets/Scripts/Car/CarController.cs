@@ -92,7 +92,7 @@ private int currentJumps = 0; // Track how many jumps have been used
         if (input != 0 && grounded == false)
         {
             // Calculate rotation change in local space
-            float rotationAmount = input * 100f * Time.deltaTime;
+            float rotationAmount = input * 150f * Time.deltaTime;
 
             // Rotate around the X-axis by applying local rotation
             transform.Rotate(rotationAmount, 0, 0, Space.Self);
@@ -139,7 +139,7 @@ private int currentJumps = 0; // Track how many jumps have been used
             forwardAcc = 8;
             CineShakeScript.Instance.ShakeCamera(0, 0);
         }
-        print(Mathf.Abs(speedInput));
+        
 
         if(Mathf.Abs(speedInput) < 4001)
         {
@@ -177,7 +177,7 @@ private int currentJumps = 0; // Track how many jumps have been used
 
         if((turnInput == 1 || turnInput == -1) && speedInput == 8000 && grounded)
         {
-            print("not");
+           
             for(int i = 0; i < trails.Length; i++)
             {
                 trails[i].emitting = true;
