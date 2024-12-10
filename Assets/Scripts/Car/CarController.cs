@@ -32,7 +32,7 @@ public class CarController : MonoBehaviour
     public float groundRayLength = 0.5f;
     public Transform groundRayPoint;
 
-    private bool acceleration;
+    public bool acceleration;
     public float jumpForce = 1500f; // The force to apply when jumping
     public int maxJumps = 2; // Total number of jumps allowed
     public int currentJumps = 0; // Track how many jumps have been used
@@ -138,7 +138,7 @@ public class CarController : MonoBehaviour
     void Accelerate()
     {
         
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && Mathf.Abs(speedInput) > 0)
         {
             acceleration = true;
         }
@@ -147,9 +147,10 @@ public class CarController : MonoBehaviour
             acceleration = false;
         }
 
-        if(acceleration == true && grounded && Mathf.Abs(speedInput) > 0)
+        if(acceleration == true && grounded/* && Mathf.Abs(speedInput) > 0*/)
         {
             forwardAcc = 16;
+            speedInput = 16000;
             CineShakeScript.Instance.ShakeCamera(3.5f, 99999);
         }
         else if(acceleration == false)
