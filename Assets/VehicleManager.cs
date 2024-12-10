@@ -12,7 +12,7 @@ public class VehicleManager : MonoBehaviour
     void Awake()
     {
         Instance = this;
-        PlayerPrefs.GetInt("selectedVehicle", 0);
+        selectedVehicle = PlayerPrefs.GetInt("selectedVehicle", 0);
         ChangeVehicle();
     }
 
@@ -34,21 +34,21 @@ public class VehicleManager : MonoBehaviour
     public void Car()
     {
         selectedVehicle = 0;
-        PlayerPrefs.SetInt("selectedVehicle", selectedVehicle);
+        PlayerPrefs.SetInt("selectedVehicle", 0);
         ChangeVehicle();
     }
 
     public void FPV()
     {
         selectedVehicle = 1;
-        PlayerPrefs.SetInt("selectedVehicle", selectedVehicle);
+        PlayerPrefs.SetInt("selectedVehicle", 1);
         ChangeVehicle();
     }
 
     public void Airplane()
     {
         selectedVehicle = 2;
-        PlayerPrefs.SetInt("selectedVehicle", selectedVehicle);
+        PlayerPrefs.SetInt("selectedVehicle", 2);
         ChangeVehicle();
     }
 

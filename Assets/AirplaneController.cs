@@ -5,45 +5,74 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class AirplaneController : MonoBehaviour
 {
-    public float throttleForce = 50f;       // Controls forward thrust
-    public float liftForceMultiplier = 2f; // Multiplies lift based on speed
-    public float pitchSpeed = 50f;         // Speed for pitch (up/down tilt)
-    public float rollSpeed = 50f;          // Speed for roll (side tilt)
-    public float yawSpeed = 25f;           // Speed for yaw (left/right turn)
+    [Header("Engine & Thrust")]
+    public float maxThrust = 5000f;          // Maximum engine thrust
+    public float throttleSpeed = 1f;        // Speed of throttle adjustment (units per second)
+
+    [Header("Aerodynamics")]
+    public float liftCoefficient = 1.5f;    // Lift force multiplier
+    public float dragCoefficient = 0.025f; // Drag force multiplier
+    public float wingArea = 10f;            // Wing area (affects lift)
+
+    [Header("Control Surfaces")]
+    public float pitchTorque = 500f;        // Torque for pitch (nose up/down)
+    public float rollTorque = 300f;         // Torque for roll (banking)
+    public float yawTorque = 200f;          // Torque for yaw (turning)
 
     private Rigidbody rb;
+    private float currentThrottle = 0f;     // Current throttle value (0 to 1)
 
     void Start()
     {
-        // Cache Rigidbody reference
         rb = GetComponent<Rigidbody>();
+        rb.useGravity = true;
     }
 
     void FixedUpdate()
     {
-        // Read joystick input
-        float rawThrottle = Input.GetAxis("Throttle"); // Throttle input
-        float yawInput = Input.GetAxis("Yaw");         // Yaw input (turn left/right)
-        float pitchInput = Input.GetAxis("Pitch");     // Pitch input (nose up/down)
-        float rollInput = Input.GetAxis("Roll");       // Roll input (banking)
+        // Read throttle input
+        float targetThrottle = Mathf.Clamp01((Input.GetAxis("Throttle") + 1) / 2); // Map to [0, 1]
 
-        // Map throttle input from [-1,1] to [0,1]
-        float throttle = Mathf.Clamp01((rawThrottle + 1) / 2);
+        // Gradually adjust throttle to target value
+        currentThrottle = Mathf.MoveTowards(currentThrottle, targetThrottle, throttleSpeed * Time.fixedDeltaTime);
 
-        // Apply forward thrust (simulate airplane engine)
-        rb.AddForce(transform.forward * throttle * throttleForce);
+        // Apply forward thrust based on current throttle
+        Vector3 thrust = transform.forward * currentThrottle * maxThrust;
+        rb.AddForce(thrust);
 
-        // Simulate lift (based on speed)
-        float liftForce = rb.velocity.magnitude * liftForceMultiplier;
-        rb.AddForce(Vector3.up * liftForce);
+        // Aerodynamic Lift
+        float airspeed = Vector3.Dot(rb.velocity, transform.forward); // Forward velocity
+        float dynamicPressure = 0.5f * airspeed * airspeed;
+        float liftForce = liftCoefficient * dynamicPressure * wingArea;
+        Vector3 lift = transform.up * liftForce;
+        rb.AddForce(lift);
 
-        // Apply pitch (nose up/down)
-        rb.AddTorque(transform.right * pitchInput * pitchSpeed * Time.fixedDeltaTime);
+        // Aerodynamic Drag
+        float dragForce = dragCoefficient * dynamicPressure * wingArea;
+        Vector3 drag = -rb.velocity.normalized * dragForce;
+        rb.AddForce(drag);
 
-        // Apply roll (banking)
-        rb.AddTorque(-transform.forward * rollInput * rollSpeed * Time.fixedDeltaTime);
+        // Control inputs
+        float pitchInput = Input.GetAxis("Pitch"); // [-1, 1]
+        float rollInput = Input.GetAxis("Roll");   // [-1, 1]
+        float yawInput = Input.GetAxis("Yaw");     // [-1, 1]
 
-        // Apply yaw (turning)
-        rb.AddTorque(Vector3.up * yawInput * yawSpeed * Time.fixedDeltaTime);
+        // Apply control torques
+        Vector3 pitchTorqueVector = transform.right * pitchInput * pitchTorque;
+        Vector3 rollTorqueVector = transform.forward * rollInput * rollTorque;
+        Vector3 yawTorqueVector = transform.up * yawInput * yawTorque;
+
+        rb.AddTorque(pitchTorqueVector);
+        rb.AddTorque(-rollTorqueVector);
+        rb.AddTorque(yawTorqueVector);
+
+        // Optional: Stabilize rotation
+        Stabilize();
+    }
+
+    void Stabilize()
+    {
+        float stabilizationFactor = 0.1f; // Adjust for desired stability
+        rb.angularVelocity *= (1 - stabilizationFactor); // Reduce rotational speed
     }
 }
