@@ -45,4 +45,11 @@ public class VehicleManager : MonoBehaviour
         ChangeVehicle();
     }
 
+    public void Airplane()
+    {
+        selectedVehicle = 2;
+        PlayerPrefs.SetInt("selectedVehicle", selectedVehicle);
+        ChangeVehicle();
+    }
+
 }
