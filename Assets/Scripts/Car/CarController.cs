@@ -25,6 +25,7 @@ public class CarController : MonoBehaviour
 
     public TrailRenderer[] trails;
     public TrailRenderer[] whiteTrails;
+    public GameObject cloudPrefab;
 
 
     public LayerMask whatIsGround;
@@ -91,6 +92,7 @@ public class CarController : MonoBehaviour
                 rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
                 grounded = false; // Car is no longer grounded
                 currentJumps = 0; // First jump used
+                Instantiate(cloudPrefab, new Vector3(transform.position.x, transform.position.y + 1.2f, transform.position.z), Quaternion.Euler(transform.rotation.eulerAngles.x - 90f, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z));
             }
             else if (!grounded && currentJumps < maxJumps) // Second jump: based on car's orientation
             {
