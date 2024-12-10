@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3128203500576494285}
   - component: {fileID: 4298433514237850697}
   - component: {fileID: 3831981777727466445}
+  - component: {fileID: -4340554762059054873}
   m_Layer: 0
   m_Name: cloud
   m_TagString: Untagged
@@ -4906,3 +4907,16 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &-4340554762059054873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3841947535540191452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0ea9d5c34e1e2b49b234c32b6449013, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  time: 2
