@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TerrainGenerator : MonoBehaviour
 {
-
+    public static TerrainGenerator instance;
     const float viewerMoveThresholdForChunkUpdate = 25f;
     const float sqrViewerMoveThresholdForChunkUpdate = viewerMoveThresholdForChunkUpdate * viewerMoveThresholdForChunkUpdate;
     public int colliderLODIndex;
@@ -26,6 +26,10 @@ public class TerrainGenerator : MonoBehaviour
     Dictionary<Vector2, TerrainChunk> terrainChunkDictionary = new Dictionary<Vector2, TerrainChunk>();
     List<TerrainChunk> visibleTerrainChunks = new List<TerrainChunk>();
 
+    void Awake()
+    {
+        instance = this;
+    }
     void Start()
     {
         textureSettings.ApplyToMaterial(mapMaterial);

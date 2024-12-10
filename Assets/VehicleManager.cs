@@ -5,15 +5,21 @@ using UnityEngine;
 public class VehicleManager : MonoBehaviour
 {
     public static VehicleManager Instance;
-
     public int selectedVehicle;
     public GameObject[] vehicles;
+    public GameObject viewer;
 
     void Awake()
     {
         Instance = this;
         selectedVehicle = PlayerPrefs.GetInt("selectedVehicle", 0);
+        
         ChangeVehicle();
+    }
+
+    void Update()
+    {
+        viewer.transform.position = vehicles[selectedVehicle].transform.position;
     }
 
     void ChangeVehicle()
@@ -23,6 +29,7 @@ public class VehicleManager : MonoBehaviour
             if (i == selectedVehicle)
             {
                 vehicles[i].SetActive(true);
+                PauseScript.instance.PauseStart();
             }
             else
             {
@@ -36,6 +43,9 @@ public class VehicleManager : MonoBehaviour
         selectedVehicle = 0;
         PlayerPrefs.SetInt("selectedVehicle", 0);
         ChangeVehicle();
+        
+        GameManager.instance.OpenSettings();
+
     }
 
     public void FPV()
@@ -43,6 +53,8 @@ public class VehicleManager : MonoBehaviour
         selectedVehicle = 1;
         PlayerPrefs.SetInt("selectedVehicle", 1);
         ChangeVehicle();
+        
+        GameManager.instance.OpenSettings();
     }
 
     public void Airplane()
@@ -50,6 +62,8 @@ public class VehicleManager : MonoBehaviour
         selectedVehicle = 2;
         PlayerPrefs.SetInt("selectedVehicle", 2);
         ChangeVehicle();
+        
+        GameManager.instance.OpenSettings();
     }
 
 }

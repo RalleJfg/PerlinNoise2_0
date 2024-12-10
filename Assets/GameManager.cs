@@ -4,8 +4,15 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager instance;
     public GameObject canvas;
     public Animator animator;
+    public bool paused = false;
+
+    void Awake()
+    {
+        instance = this;
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -23,10 +30,18 @@ public class GameManager : MonoBehaviour
         {
             OpenSettings();
         }
+
+        
+        
+
     }
+
+    
 
     public void OpenSettings()
     {
+        paused = !paused;
+        
         animator.SetTrigger("Settings");
     }
 }

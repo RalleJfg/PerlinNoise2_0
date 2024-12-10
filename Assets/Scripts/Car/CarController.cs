@@ -46,7 +46,10 @@ public class CarController : MonoBehaviour
 
     void Update()
     {
-        //rotation = transform.rotation;
+        // if(GameManager.instance.paused)
+        // {
+        //     return;
+        // }
 
         speedInput = 0f;
         if(Input.GetAxis("Vertical") > 0)
@@ -162,6 +165,10 @@ public class CarController : MonoBehaviour
 
     void FixedUpdate()
     {
+        // if(GameManager.instance.paused)
+        // {
+        //     return;
+        // }
         
         rb.drag = dragOnGround;
 
