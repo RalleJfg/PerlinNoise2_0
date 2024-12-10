@@ -29,7 +29,10 @@ public class VehicleManager : MonoBehaviour
             if (i == selectedVehicle)
             {
                 vehicles[i].SetActive(true);
-                PauseScript.instance.PauseStart();
+                if (PauseScript.instance != null)
+                {
+                    PauseScript.instance.PauseStart();
+                }
             }
             else
             {

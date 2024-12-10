@@ -73,7 +73,7 @@ public class CarController : MonoBehaviour
         rightWheel.localRotation = Quaternion.Euler(rightWheel.localRotation.eulerAngles.x, turnInput * maxWheelTurn, rightWheel.localRotation.eulerAngles.z);
 
 
-        transform.position = rb.transform.position;
+        transform.position = new Vector3(rb.transform.position.x, rb.transform.position.y + 0.15f, rb.transform.position.z);
 
 
         Accelerate();
