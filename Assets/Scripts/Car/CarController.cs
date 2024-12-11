@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
+using UnityEngine.UI;
 
 public class CarController : MonoBehaviour
 {
@@ -13,8 +13,8 @@ public class CarController : MonoBehaviour
 
     public bool grounded = false;
 
-    private GameObject groundRotationThingy;  //bilen roterar åt detta hållet
-    
+    private GameObject groundRotationThingy; // bilen roterar åt detta hållet
+
     public Transform leftWheel, rightWheel;
 
     public float maxWheelTurn = 25f;
@@ -27,7 +27,6 @@ public class CarController : MonoBehaviour
     public TrailRenderer[] whiteTrails;
     public GameObject cloudPrefab;
 
-
     public LayerMask whatIsGround;
     public float groundRayLength = 0.5f;
     public Transform groundRayPoint;
@@ -37,7 +36,11 @@ public class CarController : MonoBehaviour
     public int maxJumps = 2; // Total number of jumps allowed
     public int currentJumps = 0; // Track how many jumps have been used
 
-    //public Transform rotation;
+    public float flipRotation; // To track the accumulated rotation around the X-axis
+    public bool flipCompleted; // To ensure a single detection per flip
+    public int flips;
+    public Text flipText;
+    public Animator scoreAnimator;
 
     void Start()
     {
@@ -47,39 +50,30 @@ public class CarController : MonoBehaviour
 
     void Update()
     {
-        // if(GameManager.instance.paused)
-        // {
-        //     return;
-        // }
-
         speedInput = 0f;
-        if(Input.GetAxis("Vertical") > 0)
+        if (Input.GetAxis("Vertical") > 0)
         {
             speedInput = Input.GetAxis("Vertical") * forwardAcc * 1000f;
         }
-        else if(Input.GetAxis("Vertical") < 0)
+        else if (Input.GetAxis("Vertical") < 0)
         {
             speedInput = Input.GetAxis("Vertical") * reverseAcc * 1000f;
         }
 
         turnInput = Input.GetAxis("Horizontal");
 
-        if(grounded)
+        if (grounded)
         {
-            transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles + new Vector3(0f, turnInput * turnStrength * Time.deltaTime * Input.GetAxis("Vertical") , 0f));
+            transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles + new Vector3(0f, turnInput * turnStrength * Time.deltaTime * Input.GetAxis("Vertical"), 0f));
         }
-        
+
         leftWheel.localRotation = Quaternion.Euler(leftWheel.localRotation.eulerAngles.x, (turnInput * maxWheelTurn) - 180, leftWheel.localRotation.eulerAngles.z);
         rightWheel.localRotation = Quaternion.Euler(rightWheel.localRotation.eulerAngles.x, turnInput * maxWheelTurn, rightWheel.localRotation.eulerAngles.z);
 
-
         transform.position = new Vector3(rb.transform.position.x, rb.transform.position.y + 0.15f, rb.transform.position.z);
 
-
         Accelerate();
-        
         RotateCarInAir();
-        
         Jump();
     }
 
@@ -107,60 +101,86 @@ public class CarController : MonoBehaviour
     {
         float input = Input.GetAxis("Vertical");
 
-        if (input != 0 && grounded == false)
+        if (!grounded) // Only track rotation while in the air
         {
             // Calculate rotation change in local space
             float rotationAmount = input * 150f * Time.deltaTime;
+
+            // Accumulate the rotation around the X-axis
+            flipRotation += rotationAmount;
+
+            // Check for a front flip or backflip completion
+            if (Mathf.Abs(flipRotation) >= 330f && !flipCompleted)
+            {
+                if (flipRotation > 0)
+                {
+                    Debug.Log("Front flip completed!");
+                }
+                else
+                {
+                    Debug.Log("Backflip completed!");
+                }
+                flipCompleted = true; // Prevent multiple detections for the same flip
+                
+            }
+
+            if(flipCompleted)
+            {
+                flips++;
+                if(flipRotation > 0)
+                {
+                    flipText.text = "Frontflip  x" + flips;
+                }
+                else if(flipRotation < 0)
+                {
+                    flipText.text = "Backflip  x" + flips;
+                }
+                scoreAnimator.SetTrigger("flip");
+                flipRotation = transform.rotation.x;
+                flipCompleted = false;
+                
+            }
 
             // Rotate around the X-axis by applying local rotation
             transform.Rotate(rotationAmount, 0, 0, Space.Self);
         }
 
-        if(Input.GetAxis("Horizontal") > 0 && grounded == false)
+        if (Input.GetAxis("Horizontal") > 0 && !grounded)
         {
-            
-            // Define the target rotation
             Quaternion targetRotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y + 10f, transform.rotation.eulerAngles.z);
-
-            // Smoothly interpolate to the target rotation
             transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
         }
-        else if(Input.GetAxis("Horizontal") < 0 && grounded == false)
+        else if (Input.GetAxis("Horizontal") < 0 && !grounded)
         {
-            // Define the target rotation
             Quaternion targetRotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y - 10f, transform.rotation.eulerAngles.z);
-
-            // Smoothly interpolate to the target rotation
             transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
         }
     }
 
     void Accelerate()
     {
-        
         if (Input.GetMouseButtonDown(0) && Mathf.Abs(speedInput) > 0)
         {
             acceleration = true;
         }
-        if(Input.GetMouseButtonUp(0))
+        if (Input.GetMouseButtonUp(0))
         {
             acceleration = false;
         }
 
-        if(acceleration == true && grounded/* && Mathf.Abs(speedInput) > 0*/)
+        if (acceleration == true && grounded)
         {
             forwardAcc = 16;
             speedInput = 16000;
             CineShakeScript.Instance.ShakeCamera(3.5f, 99999);
         }
-        else if(acceleration == false)
+        else if (acceleration == false)
         {
             forwardAcc = 8;
             CineShakeScript.Instance.ShakeCamera(0, 0);
         }
-        
 
-        if(Mathf.Abs(speedInput) < 4001)
+        if (Mathf.Abs(speedInput) < 4001)
         {
             CineShakeScript.Instance.ShakeCamera(0, 0);
         }
@@ -168,29 +188,25 @@ public class CarController : MonoBehaviour
 
     void FixedUpdate()
     {
-        // if(GameManager.instance.paused)
-        // {
-        //     return;
-        // }
-        
         rb.drag = dragOnGround;
 
         RaycastHit hit;
 
-        if(Physics.Raycast(groundRayPoint.position, -transform.up, out hit, groundRayLength, whatIsGround))
+        if (Physics.Raycast(groundRayPoint.position, -transform.up, out hit, groundRayLength, whatIsGround))
         {
             grounded = true;
 
-            
-            
-            // Calculate the target rotation based on the surface normal
             Quaternion targetRotation = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
-
-            // Smoothly interpolate towards the target rotation
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
 
-            // Reset jumps when the car lands
-            currentJumps = 0;
+            currentJumps = 0; // Reset jumps when the car lands
+
+            // Reset rotation tracking and flip status
+            flipRotation = 0f;
+            flipCompleted = false;
+            //gravityForce xp for flips here
+            flips = 0;
+            //StartCoroutine(Animation());
         }
         else
         {
@@ -200,45 +216,41 @@ public class CarController : MonoBehaviour
 
         emissionRate = 0;
 
-        if((turnInput == 1 || turnInput == -1) && speedInput == 8000 && grounded)
+        if ((turnInput == 1 || turnInput == -1) && speedInput == 8000 && grounded)
         {
-           
-            for(int i = 0; i < trails.Length; i++)
+            for (int i = 0; i < trails.Length; i++)
             {
                 trails[i].emitting = true;
             }
         }
         else
         {
-            for(int i = 0; i < trails.Length; i++)
+            for (int i = 0; i < trails.Length; i++)
             {
                 trails[i].emitting = false;
             }
         }
 
-        if((speedInput >= 8001))
+        if ((speedInput >= 8001))
         {
-           
-            for(int i = 0; i < whiteTrails.Length; i++)
+            for (int i = 0; i < whiteTrails.Length; i++)
             {
                 whiteTrails[i].emitting = true;
             }
         }
         else
         {
-            for(int i = 0; i < whiteTrails.Length; i++)
+            for (int i = 0; i < whiteTrails.Length; i++)
             {
                 whiteTrails[i].emitting = false;
             }
         }
 
-        if(grounded)
+        if (grounded)
         {
-
-            if(Mathf.Abs(speedInput) > 0)
+            if (Mathf.Abs(speedInput) > 0)
             {
                 rb.AddForce(transform.forward * speedInput);
-
                 emissionRate = maxEmission;
             }
         }
@@ -246,7 +258,6 @@ public class CarController : MonoBehaviour
         {
             rb.drag = 0.1f;
             rb.AddForce(Vector3.up * -gravityForce * 100f);
-            
         }
 
         foreach (ParticleSystem part in particleSystems)
@@ -254,6 +265,15 @@ public class CarController : MonoBehaviour
             var emissionModule = part.emission;
             emissionModule.rateOverTime = emissionRate;
         }
+    }
+
+    private IEnumerator Animation()
+    {
+        yield return new WaitForSeconds(1);
+        
+        //temporary. fade out text here with animation
+        flipText.text = "";
+        
         
     }
 }
