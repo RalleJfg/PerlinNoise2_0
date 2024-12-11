@@ -204,7 +204,9 @@ public class CarController : MonoBehaviour
             // Reset rotation tracking and flip status
             flipRotation = 0f;
             flipCompleted = false;
-            //gravityForce xp for flips here
+            
+            XPbar.instance.SetXP(1 * flips);
+
             flips = 0;
             //StartCoroutine(Animation());
         }
