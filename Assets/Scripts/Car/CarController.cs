@@ -26,6 +26,7 @@ public class CarController : MonoBehaviour
     public TrailRenderer[] trails;
     public TrailRenderer[] whiteTrails;
     public GameObject cloudPrefab;
+    public GameObject landingParticle;
 
     public LayerMask whatIsGround;
     public float groundRayLength = 0.5f;
@@ -41,6 +42,8 @@ public class CarController : MonoBehaviour
     public int flips;
     public Text flipText;
     public Animator scoreAnimator;
+    public float fallingSpeed;
+
 
     void Start()
     {
@@ -189,6 +192,16 @@ public class CarController : MonoBehaviour
     void FixedUpdate()
     {
         rb.drag = dragOnGround;
+
+        fallingSpeed = rb.velocity.y;
+        
+
+        if(fallingSpeed < -17 && grounded)
+        {
+            Instantiate(landingParticle, new Vector3(transform.position.x, transform.position.y + 1.2f, transform.position.z), Quaternion.Euler(transform.rotation.eulerAngles.x - 90f, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z));
+            print(fallingSpeed);
+        }
+        
 
         RaycastHit hit;
 
