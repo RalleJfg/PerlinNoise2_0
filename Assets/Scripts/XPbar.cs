@@ -11,6 +11,7 @@ public class XPbar : MonoBehaviour
     public int maxValue;
     public int level;
     public Text levelText;
+    public Text xpText;
     public int localXP;
 
 
@@ -49,6 +50,8 @@ public class XPbar : MonoBehaviour
     void Update()
     {
             slider.value = localXP;
+
+            xpText.text = localXP + "/" + maxValue;
     }   
     public void SetXP(int xp)
     {

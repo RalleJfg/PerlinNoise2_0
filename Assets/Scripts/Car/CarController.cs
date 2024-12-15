@@ -86,19 +86,26 @@ public class CarController : MonoBehaviour
         {
             if (grounded) // First jump: straight up
             {
+                //CineShakeScript.Instance.ShakeCamera(3, 0.25f);
+                
                 rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
                 grounded = false; // Car is no longer grounded
                 currentJumps = 0; // First jump used
                 Instantiate(cloudPrefab, new Vector3(transform.position.x, transform.position.y + 1.2f, transform.position.z), Quaternion.Euler(transform.rotation.eulerAngles.x - 90f, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z));
+                
             }
             else if (!grounded && currentJumps < maxJumps) // Second jump: based on car's orientation
             {
+                //CineShakeScript.Instance.ShakeCamera(3, 0.25f);
                 Vector3 jumpDirection = transform.up; // Use the car's current orientation
                 rb.AddForce(jumpDirection * jumpForce, ForceMode.Impulse);
                 currentJumps++; // Second jump used
+                
             }
         }
     }
+
+    
 
     void RotateCarInAir()
     {
@@ -177,7 +184,7 @@ public class CarController : MonoBehaviour
             speedInput = 16000;
             CineShakeScript.Instance.ShakeCamera(3.5f, 99999);
         }
-        else if (acceleration == false)
+        else if (acceleration == false && grounded)
         {
             forwardAcc = 8;
             CineShakeScript.Instance.ShakeCamera(0, 0);
@@ -199,7 +206,7 @@ public class CarController : MonoBehaviour
         if(fallingSpeed < -17 && grounded)
         {
             Instantiate(landingParticle, new Vector3(transform.position.x, transform.position.y + 1.2f, transform.position.z), Quaternion.Euler(transform.rotation.eulerAngles.x - 90f, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z));
-            print(fallingSpeed);
+            
         }
         
 
