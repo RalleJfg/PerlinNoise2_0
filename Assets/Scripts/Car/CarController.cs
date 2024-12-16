@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class CarController : MonoBehaviour
 {
+    public static CarController instance;
     public Rigidbody rb;
 
     public float forwardAcc = 8f, reverseAcc = 4f, maxSpeed = 50f, turnStrength = 180f, gravityForce = 10f, dragOnGround = 3f;
@@ -45,6 +46,10 @@ public class CarController : MonoBehaviour
     public float fallingSpeed;
 
 
+    void Awake()
+    {
+        instance = this;
+    }
     void Start()
     {
         rb.transform.parent = null;

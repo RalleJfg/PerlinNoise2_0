@@ -9,6 +9,10 @@ public class GameManager : MonoBehaviour
     public Animator animator;
     public bool paused = false;
     public bool controller = false;
+    public GameObject pauseText;
+    public ParticleSystem[] particleSystems;
+   
+    private float emissionRate;
 
     void Awake()
     {
@@ -30,9 +34,31 @@ public class GameManager : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.E))
         {
             OpenSettings();
+
+            if(pauseText.activeInHierarchy)
+            {
+                pauseText.SetActive(false);
+            }
+            else
+            {
+                pauseText.SetActive(true);
+                CineShakeScript.Instance.ShakeCamera(0, 0);
+                CarController.instance.acceleration = false;
+
+                foreach (ParticleSystem part in particleSystems)
+                {
+                    var emissionModule = part.emission;
+                    emissionModule.rateOverTime = emissionRate;
+                }
+            }
         }
 
         CheckForController();
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
         
 
     }
@@ -57,15 +83,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // Final controller usage check
-        if (controllerAxisUsed || controllerButtonPressed)
-        {
-            Debug.Log("Controller is being used!");
-        }
-        else if (Input.anyKey)
-        {
-            Debug.Log("Keyboard or Mouse is being used!");
-        }
+        
     }
 
     
