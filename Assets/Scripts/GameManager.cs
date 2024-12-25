@@ -53,7 +53,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        CheckForController();
+        //CheckForController();
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -63,28 +63,28 @@ public class GameManager : MonoBehaviour
 
     }
 
-    void CheckForController()
-    {
-        float deadZone = 0.2f;
+    // void CheckForController()
+    // {
+    //     float deadZone = 0.2f;
 
-        // Detect significant movement on controller axes
-        bool controllerAxisUsed =
-            Mathf.Abs(Input.GetAxis("Horizontal")) > deadZone ||
-            Mathf.Abs(Input.GetAxis("Vertical")) > deadZone;
+    //     // Detect significant movement on controller axes
+    //     bool controllerAxisUsed =
+    //         Mathf.Abs(Input.GetAxis("Horizontal")) > deadZone ||
+    //         Mathf.Abs(Input.GetAxis("Vertical")) > deadZone;
 
-        // Check for joystick button presses
-        bool controllerButtonPressed = false;
-        for (int i = 0; i < 20; i++) // Checking up to 20 buttons
-        {
-            if (Input.GetKey(KeyCode.JoystickButton0 + i))
-            {
-                controllerButtonPressed = true;
-                break;
-            }
-        }
+    //     // Check for joystick button presses
+    //     bool controllerButtonPressed = false;
+    //     for (int i = 0; i < 20; i++) // Checking up to 20 buttons
+    //     {
+    //         if (Input.GetKey(KeyCode.JoystickButton0 + i))
+    //         {
+    //             controllerButtonPressed = true;
+    //             break;
+    //         }
+    //     }
 
         
-    }
+    // }
 
     
 
